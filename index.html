@@ -22,10 +22,6 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
 
-    h1 {
-      margin-bottom: 20px;
-    }
-
     input {
       padding: 10px;
       width: 80%;
@@ -43,10 +39,6 @@
       background: #4facfe;
       color: white;
       font-weight: bold;
-    }
-
-    button:hover {
-      background: #00c6ff;
     }
 
     #result {
@@ -73,13 +65,12 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
   </style>
 </head>
 <body>
 
 <div class="card">
-  <h1>Weather App 🌤️</h1>
+  <h2>Weather App 🌤️</h2>
 
   <input type="text" id="city" placeholder="Enter city name">
   <br>
@@ -94,59 +85,36 @@
 </div>
 
 <script>
-<div id="result"></div>
-<img id="icon">
 
-<script>
-<script>
 const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22";
 
 async function getWeather() {
+
+  document.getElementById("spinner").style.display = "block";
+
   const city = document.getElementById("city").value;
-  const spinner = document.getElementById("spinner");
-  const result = document.getElementById("result");
-  const icon = document.getElementById("icon");
-
-  if (!city) {
-    alert("Enter city name");
-    return;
-  }
-
-  spinner.style.display = "block";
-  result.innerHTML = "";
-  icon.style.display = "none";
-
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
+  const response = await fetch(url);
+  const data = await response.json();
 
-    spinner.style.display = "none";
+  document.getElementById("spinner").style.display = "none";
 
-    if (data.cod !== 200) {
-      result.innerHTML = "City not found";
-      return;
-    }
-
-    result.innerHTML = `
-      <h3>${data.name}</h3>
-      <p>🌡 Temp: ${data.main.temp} °C</p>
-      <p>🌥 ${data.weather[0].description}</p>
-    `;
-
-    icon.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-    icon.style.display = "block";
-
-  } catch (error) {
-    spinner.style.display = "none";
-    result.innerHTML = "Error fetching data";
+  if(data.cod == 200) {
+    displayWeather(data);
+  } else {
+    document.getElementById("result").innerHTML = "City not found ❌";
+    document.getElementById("icon").src = "";
   }
 }
 
-function getLocationWeather() {
+async function getLocationWeather() {
+
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(async (position) => {
+
+    document.getElementById("spinner").style.display = "block";
+
+    navigator.geolocation.getCurrentPosition(async function(position) {
 
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
@@ -156,24 +124,25 @@ function getLocationWeather() {
       const response = await fetch(url);
       const data = await response.json();
 
-      document.getElementById("result").innerHTML = `
-        <h3>${data.name}</h3>
-        <p>🌡 Temp: ${data.main.temp} °C</p>
-        <p>🌥 ${data.weather[0].description}</p>
-      `;
+      document.getElementById("spinner").style.display = "none";
 
-      document.getElementById("icon").src =
-        `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-
-      document.getElementById("icon").style.display = "block";
-
-    }, () => {
-      alert("Location permission denied");
+      displayWeather(data);
     });
-  } else {
-    alert("Geolocation not supported");
   }
 }
+
+function displayWeather(data) {
+
+  document.getElementById("result").innerHTML =
+    "Location: " + data.name + "<br>" +
+    "Temperature: " + data.main.temp + "°C <br>" +
+    "Condition: " + data.weather[0].description;
+
+  const iconCode = data.weather[0].icon;
+  document.getElementById("icon").src =
+    `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+}
+
 </script>
 
 </body>

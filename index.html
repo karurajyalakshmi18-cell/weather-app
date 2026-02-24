@@ -52,127 +52,73 @@
         <div id="forecast"></div>
     </div>
 
-<script>
+<body>
 
-const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22"; 
-    
 
-function getWeather() {
-    const city = document.getElementById("city").value;
+    <script>
+        const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22";
 
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
-    .then(response => response.json())
-    .then(data => {
-        let condition = data.weather[0].main.toLowerCase();
-let icon = "";
-let bg = "";
+        function getWeather() {
+            const city = document.getElementById("city").value;
 
-// Weather icon decide cheyyadam
-if (condition.includes("rain")) {
-    icon = "🌧";
-    bg = "linear-gradient(to right, #4e73df, #1cc88a)";
-}
-else if (condition.includes("cloud")) {
-    icon = "☁";
-    bg = "linear-gradient(to right, #757f9a, #d7dde8)";
-}
-else if (condition.includes("clear")) {
-    icon = "☀";
-    bg = "linear-gradient(to right, #f7971e, #ffd200)";
-}
-else if (condition.includes("snow")) {
-    icon = "❄";
-    bg = "linear-gradient(to right, #83a4d4, #b6fbff)";
-}
-else {
-    icon = "🌍";
-    bg = "linear-gradient(to right, #2193b0, #6dd5ed)";
-}
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+            .then(response => response.json())
+            .then(data => {
 
-// Result display change cheyyi
-document.getElementById("result").innerHTML =
-    `<h2>${icon} ${data.name}</h2>
-     <h1>${data.main.temp}°C</h1>
-     <p>${data.weather[0].description}</p>`;
+                let condition = data.weather[0].main.toLowerCase();
+                let icon = "";
+                let bg = "";
 
-// Background change
-document.body.style.background = bg;
-    .catch(() => {
-        document.getElementById("result").innerHTML = "City not found!";
-    });
-}
-function getForecast(city) {
+                if (condition.includes("rain")) {
+                    icon = "🌧";
+                    bg = "linear-gradient(to right, #4e73df, #1cc88a)";
+                }
+                else if (condition.includes("cloud")) {
+                    icon = "☁";
+                    bg = "linear-gradient(to right, #757f9a, #d7dde8)";
+                }
+                else if (condition.includes("clear")) {
+                    icon = "☀";
+                    bg = "linear-gradient(to right, #f7971e, #ffd200)";
+                }
+                else {
+                    icon = "🌍";
+                    bg = "linear-gradient(to right, #2193b0, #6dd5ed)";
+                }
 
-    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`)
-    .then(response => response.json())
-    .then(data => {
+                document.getElementById("result").innerHTML =
+                    `<h2>${icon} ${data.name}</h2>
+                     <h1>${data.main.temp}°C</h1>
+                     <p>${data.weather[0].description}</p>`;
 
-        let forecastHTML = "<h3>5 Day Forecast</h3>";
-
-        for (let i = 0; i < data.list.length; i += 8) {
-            forecastHTML += `
-                <p>
-                📅 ${data.list[i].dt_txt.split(" ")[0]} <br>
-                🌡 ${data.list[i].main.temp}°C <br>
-                🌥 ${data.list[i].weather[0].description}
-                </p>
-                <hr>
-            `;
+                document.body.style.background = bg;
+            })
+            .catch(() => {
+                document.getElementById("result").innerHTML = "City not found!";
+            });
         }
 
-        document.getElementById("forecast").innerHTML = forecastHTML;
-    });
-}
-function getLocationWeather() {
-    navigator.geolocation.getCurrentPosition(position => {
+        function getLocationWeather() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
 
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+                    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("result").innerHTML =
+                            `<h2>${data.name}</h2>
+                             <h1>${data.main.temp}°C</h1>
+                             <p>${data.weather[0].description}</p>`;
+                    });
+                });
+            }
+        }
 
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
-        .then(response => response.json())
-        .then(data => {
-            let condition = data.weather[0].main.toLowerCase();
-let icon = "";
-let bg = "";
+    </script>
 
-// Weather icon decide cheyyadam
-if (condition.includes("rain")) {
-    icon = "🌧";
-    bg = "linear-gradient(to right, #4e73df, #1cc88a)";
-}
-else if (condition.includes("cloud")) {
-    icon = "☁";
-    bg = "linear-gradient(to right, #757f9a, #d7dde8)";
-}
-else if (condition.includes("clear")) {
-    icon = "☀";
-    bg = "linear-gradient(to right, #f7971e, #ffd200)";
-}
-else if (condition.includes("snow")) {
-    icon = "❄";
-    bg = "linear-gradient(to right, #83a4d4, #b6fbff)";
-}
-else {
-    icon = "🌍";
-    bg = "linear-gradient(to right, #2193b0, #6dd5ed)";
-}
-
-// Result display change cheyyi
-document.getElementById("result").innerHTML =
-    `<h2>${icon} ${data.name}</h2>
-     <h1>${data.main.temp}°C</h1>
-     <p>${data.weather[0].description}</p>`;
-
-// Background change
-document.body.style.background = bg;
-
-    }, () => {
-        alert("Location access denied!");
-    });
-}
-
-</script>
+</body>
 
 </body>
 </html>

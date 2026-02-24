@@ -30,10 +30,35 @@
 
   <input type="text" id="city" placeholder="Enter city name">
   <button onclick="getWeather()">Get Weather</button>
-
+  <button onclick="getLocationWeather()">Current Location Weather</button>
   <div id="result"></div>
 
 <script>
+  async function getLocationWeather() {
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async function(position) {
+
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22";
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      document.getElementById("result").innerHTML =
+        "Location: " + data.name + "<br>" +
+        "Temperature: " + data.main.temp + "°C <br>" +
+        "Condition: " + data.weather[0].description;
+
+    });
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
 async function getWeather() {
   const city = document.getElementById("city").value;
   const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22";

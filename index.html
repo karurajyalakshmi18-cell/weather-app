@@ -49,11 +49,13 @@
         <button onclick="getLocationWeather()">Current Location Weather</button>
 
         <div id="result"></div>
+        <div id="forecast"></div>
     </div>
 
 <script>
 
 const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22"; 
+    
 
 function getWeather() {
     const city = document.getElementById("city").value;
@@ -69,7 +71,28 @@ function getWeather() {
         document.getElementById("result").innerHTML = "City not found!";
     });
 }
+function getForecast(city) {
 
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`)
+    .then(response => response.json())
+    .then(data => {
+
+        let forecastHTML = "<h3>5 Day Forecast</h3>";
+
+        for (let i = 0; i < data.list.length; i += 8) {
+            forecastHTML += `
+                <p>
+                📅 ${data.list[i].dt_txt.split(" ")[0]} <br>
+                🌡 ${data.list[i].main.temp}°C <br>
+                🌥 ${data.list[i].weather[0].description}
+                </p>
+                <hr>
+            `;
+        }
+
+        document.getElementById("forecast").innerHTML = forecastHTML;
+    });
+}
 function getLocationWeather() {
     navigator.geolocation.getCurrentPosition(position => {
 

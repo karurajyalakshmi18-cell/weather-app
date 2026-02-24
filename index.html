@@ -53,38 +53,56 @@
     </div>
 
 <body>
-
+<button onclick="getWeather()">Get Weather</button>
+<button onclick="getLocationWeather()">Current Location</button>
 
     <script>
-        const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22";
+       const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22";
 
-        function getWeather() {
-            const city = document.getElementById("city").value;
+function getWeather() {
+    const city = document.getElementById("city").value;
 
-            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+    .then(response => response.json())
+    .then(data => {
+        let condition = data.weather[0].main.toLowerCase();
+        let icon = "";
+        let bg = "";
+
+        if(condition.includes("rain")) { icon="🌧"; bg="linear-gradient(to right, #4e73df, #1cc88a)"; }
+        else if(condition.includes("cloud")) { icon="☁"; bg="linear-gradient(to right, #757f9a, #d7dde8)"; }
+        else if(condition.includes("clear")) { icon="☀"; bg="linear-gradient(to right, #f7971e, #ffd200)"; }
+        else { icon="🌍"; bg="linear-gradient(to right, #2193b0, #6dd5ed)"; }
+
+        document.getElementById("result").innerHTML =
+            `<h2>${icon} ${data.name}</h2>
+             <h1>${data.main.temp}°C</h1>
+             <p>${data.weather[0].description}</p>`;
+
+        document.body.style.background = bg;
+    })
+    .catch(() => {
+        document.getElementById("result").innerHTML = "City not found!";
+    });
+}
+
+function getLocationWeather() {
+    if(navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
             .then(response => response.json())
             .then(data => {
-
                 let condition = data.weather[0].main.toLowerCase();
                 let icon = "";
                 let bg = "";
 
-                if (condition.includes("rain")) {
-                    icon = "🌧";
-                    bg = "linear-gradient(to right, #4e73df, #1cc88a)";
-                }
-                else if (condition.includes("cloud")) {
-                    icon = "☁";
-                    bg = "linear-gradient(to right, #757f9a, #d7dde8)";
-                }
-                else if (condition.includes("clear")) {
-                    icon = "☀";
-                    bg = "linear-gradient(to right, #f7971e, #ffd200)";
-                }
-                else {
-                    icon = "🌍";
-                    bg = "linear-gradient(to right, #2193b0, #6dd5ed)";
-                }
+                if(condition.includes("rain")) { icon="🌧"; bg="linear-gradient(to right, #4e73df, #1cc88a)"; }
+                else if(condition.includes("cloud")) { icon="☁"; bg="linear-gradient(to right, #757f9a, #d7dde8)"; }
+                else if(condition.includes("clear")) { icon="☀"; bg="linear-gradient(to right, #f7971e, #ffd200)"; }
+                else { icon="🌍"; bg="linear-gradient(to right, #2193b0, #6dd5ed)"; }
 
                 document.getElementById("result").innerHTML =
                     `<h2>${icon} ${data.name}</h2>
@@ -92,33 +110,12 @@
                      <p>${data.weather[0].description}</p>`;
 
                 document.body.style.background = bg;
-            })
-            .catch(() => {
-                document.getElementById("result").innerHTML = "City not found!";
             });
-        }
-
-        function getLocationWeather() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-
-                    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById("result").innerHTML =
-                            `<h2>${data.name}</h2>
-                             <h1>${data.main.temp}°C</h1>
-                             <p>${data.weather[0].description}</p>`;
-                    });
-                });
-            }
-        }
+        });
+    }
+}
 
     </script>
-
-</body>
 
 </body>
 </html>

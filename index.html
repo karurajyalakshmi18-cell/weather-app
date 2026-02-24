@@ -94,6 +94,10 @@
 </div>
 
 <script>
+<div id="result"></div>
+<img id="icon">
+
+<script>
 
 const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22";
 
@@ -102,14 +106,20 @@ async function getWeather() {
   document.getElementById("spinner").style.display = "block";
 
   const city = document.getElementById("city").value;
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+  const url =
+    "https://api.openweathermap.org/data/2.5/weather?q=" +
+    city +
+    "&appid=" +
+    apiKey +
+    "&units=metric";
 
   const response = await fetch(url);
   const data = await response.json();
 
   document.getElementById("spinner").style.display = "none";
 
-  if(data.cod == 200) {
+  if (data.cod == 200) {
     displayWeather(data);
   } else {
     document.getElementById("result").innerHTML = "City not found ❌";
@@ -128,7 +138,14 @@ async function getLocationWeather() {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
 
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+      const url =
+        "https://api.openweathermap.org/data/2.5/weather?lat=" +
+        lat +
+        "&lon=" +
+        lon +
+        "&appid=" +
+        apiKey +
+        "&units=metric";
 
       const response = await fetch(url);
       const data = await response.json();
@@ -138,6 +155,8 @@ async function getLocationWeather() {
       displayWeather(data);
 
     });
+  } else {
+    alert("Geolocation not supported");
   }
 }
 
@@ -149,9 +168,14 @@ function displayWeather(data) {
     "Condition: " + data.weather[0].description;
 
   const iconCode = data.weather[0].icon;
+
   document.getElementById("icon").src =
-    `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+    "https://openweathermap.org/img/wn/" +
+    iconCode +
+    "@2x.png";
 }
+
+</script>
 
 </script>
 

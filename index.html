@@ -63,10 +63,40 @@ function getWeather() {
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
     .then(response => response.json())
     .then(data => {
-        document.getElementById("result").innerHTML =
-            `🌡 Temperature: ${data.main.temp}°C <br>
-             🌥 Condition: ${data.weather[0].description}`;
-    })
+        let condition = data.weather[0].main.toLowerCase();
+let icon = "";
+let bg = "";
+
+// Weather icon decide cheyyadam
+if (condition.includes("rain")) {
+    icon = "🌧";
+    bg = "linear-gradient(to right, #4e73df, #1cc88a)";
+}
+else if (condition.includes("cloud")) {
+    icon = "☁";
+    bg = "linear-gradient(to right, #757f9a, #d7dde8)";
+}
+else if (condition.includes("clear")) {
+    icon = "☀";
+    bg = "linear-gradient(to right, #f7971e, #ffd200)";
+}
+else if (condition.includes("snow")) {
+    icon = "❄";
+    bg = "linear-gradient(to right, #83a4d4, #b6fbff)";
+}
+else {
+    icon = "🌍";
+    bg = "linear-gradient(to right, #2193b0, #6dd5ed)";
+}
+
+// Result display change cheyyi
+document.getElementById("result").innerHTML =
+    `<h2>${icon} ${data.name}</h2>
+     <h1>${data.main.temp}°C</h1>
+     <p>${data.weather[0].description}</p>`;
+
+// Background change
+document.body.style.background = bg;
     .catch(() => {
         document.getElementById("result").innerHTML = "City not found!";
     });
@@ -102,11 +132,40 @@ function getLocationWeather() {
         fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("result").innerHTML =
-                `📍 ${data.name} <br>
-                 🌡 Temperature: ${data.main.temp}°C <br>
-                 🌥 Condition: ${data.weather[0].description}`;
-        });
+            let condition = data.weather[0].main.toLowerCase();
+let icon = "";
+let bg = "";
+
+// Weather icon decide cheyyadam
+if (condition.includes("rain")) {
+    icon = "🌧";
+    bg = "linear-gradient(to right, #4e73df, #1cc88a)";
+}
+else if (condition.includes("cloud")) {
+    icon = "☁";
+    bg = "linear-gradient(to right, #757f9a, #d7dde8)";
+}
+else if (condition.includes("clear")) {
+    icon = "☀";
+    bg = "linear-gradient(to right, #f7971e, #ffd200)";
+}
+else if (condition.includes("snow")) {
+    icon = "❄";
+    bg = "linear-gradient(to right, #83a4d4, #b6fbff)";
+}
+else {
+    icon = "🌍";
+    bg = "linear-gradient(to right, #2193b0, #6dd5ed)";
+}
+
+// Result display change cheyyi
+document.getElementById("result").innerHTML =
+    `<h2>${icon} ${data.name}</h2>
+     <h1>${data.main.temp}°C</h1>
+     <p>${data.weather[0].description}</p>`;
+
+// Background change
+document.body.style.background = bg;
 
     }, () => {
         alert("Location access denied!");

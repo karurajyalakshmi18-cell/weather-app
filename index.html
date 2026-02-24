@@ -1,146 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Weather App</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-    }
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            margin-top: 100px;
+        }
 
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      width: 300px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
+        .card {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            margin: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
 
-    input {
-      padding: 10px;
-      width: 80%;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-    }
+        input {
+            padding: 8px;
+            width: 70%;
+        }
 
-    button {
-      padding: 10px;
-      margin: 5px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background: #4facfe;
-      color: white;
-      font-weight: bold;
-    }
+        button {
+            padding: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
 
-    #result {
-      margin-top: 15px;
-      font-size: 18px;
-    }
-
-    #icon {
-      width: 80px;
-    }
-
-    .spinner {
-      display: none;
-      margin: 10px auto;
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid #4facfe;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="card">
-  <h2>Weather App 🌤️</h2>
+    <div class="card">
+        <h2>Weather App</h2>
 
-  <input type="text" id="city" placeholder="Enter city name">
-  <br>
+        <input type="text" id="city" placeholder="Enter City Name">
+        <br>
 
-  <button onclick="getWeather()">Get Weather</button>
-  <button onclick="getLocationWeather()">Current Location</button>
+        <button onclick="getWeather()">Get Weather</button>
+        <button onclick="getLocationWeather()">Current Location Weather</button>
 
-  <div class="spinner" id="spinner"></div>
-
-  <div id="result"></div>
-  <img id="icon">
-</div>
+        <div id="result"></div>
+    </div>
 
 <script>
 
-const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22";
+const apiKey = "ffa4ae2f22d4376ac1bc215f121c2f22"; 
 
-async function getWeather() {
+function getWeather() {
+    const city = document.getElementById("city").value;
 
-  document.getElementById("spinner").style.display = "block";
-
-  const city = document.getElementById("city").value;
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  document.getElementById("spinner").style.display = "none";
-
-  if(data.cod == 200) {
-    displayWeather(data);
-  } else {
-    document.getElementById("result").innerHTML = "City not found ❌";
-    document.getElementById("icon").src = "";
-  }
-}
-
-async function getLocationWeather() {
-
-  if (navigator.geolocation) {
-
-    document.getElementById("spinner").style.display = "block";
-
-    navigator.geolocation.getCurrentPosition(async function(position) {
-
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
-
-      const response = await fetch(url);
-      const data = await response.json();
-
-      document.getElementById("spinner").style.display = "none";
-
-      displayWeather(data);
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("result").innerHTML =
+            `🌡 Temperature: ${data.main.temp}°C <br>
+             🌥 Condition: ${data.weather[0].description}`;
+    })
+    .catch(() => {
+        document.getElementById("result").innerHTML = "City not found!";
     });
-  }
 }
 
-function displayWeather(data) {
+function getLocationWeather() {
+    navigator.geolocation.getCurrentPosition(position => {
 
-  document.getElementById("result").innerHTML =
-    "Location: " + data.name + "<br>" +
-    "Temperature: " + data.main.temp + "°C <br>" +
-    "Condition: " + data.weather[0].description;
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
 
-  const iconCode = data.weather[0].icon;
-  document.getElementById("icon").src =
-    `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("result").innerHTML =
+                `📍 ${data.name} <br>
+                 🌡 Temperature: ${data.main.temp}°C <br>
+                 🌥 Condition: ${data.weather[0].description}`;
+        });
+
+    }, () => {
+        alert("Location access denied!");
+    });
 }
 
 </script>
